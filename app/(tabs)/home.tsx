@@ -1,11 +1,11 @@
-import useFetch from "@/hooks/useFetch";
-import { User } from "@/types/user";
+import { useUsers } from "@/context/UserContext";
 import { useRouter } from "expo-router";
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 
 export default function Home(){
-    const {data:users,loading,error}=useFetch<User[]>("https://jsonplaceholder.typicode.com/users")
+    // const {data:users,loading,error}=useFetch<User[]>("https://jsonplaceholder.typicode.com/users")
+    const { users, loading, error } = useUsers();
     const router=useRouter();
 
     return(
