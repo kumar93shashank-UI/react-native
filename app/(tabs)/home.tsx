@@ -26,15 +26,15 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-      name:{
-        fontSize:24,
-        fontWeight:"800",
-        color:"black"
+    name: {
+        fontSize: 24,
+        fontWeight: "800",
+        color: "black"
     },
-    email:{
-        fontSize:16,
-        fontWeight:"400",
-        color:"grey"
+    email: {
+        fontSize: 16,
+        fontWeight: "400",
+        color: "grey"
     },
     userCard: {
         padding: 16,
