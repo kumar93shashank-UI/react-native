@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
+import * as Notifications from "expo-notifications";
 import React, { useEffect } from "react";
 import { Alert, Image, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
@@ -9,6 +10,16 @@ export default function SettingsScreen() {
     const [savedName, setSavedName] = React.useState<string>("");
     const [profileImage, setProfileImage] = React.useState<string|null>(null);
     const [location, setLocation] = React.useState<{latitude: number, longitude: number}|null>(null);
+    const [pushToken, setPushToken] = React.useState<string|null>(null);
+
+    async function getToken() {
+        const { status } = await Notifications.requestPermissionsAsync();
+        if (status !== "granted") return;
+        const token = await Notifications.getExpoPushTokenAsync({
+            projectId: "your-expo-project-id"  // from app.json
+        });
+        setPushToken(token.data);
+    }
 
     const OS = Platform.OS==="ios"?"iOS":"Android";
     useEffect(() => {
@@ -73,6 +84,10 @@ export default function SettingsScreen() {
                 <Text style={styles.btnText}>Fetch Location</Text>
             </TouchableOpacity>
             {location && <Text>Latitude: {location.latitude.toFixed(4)}, Longitude: {location.longitude.toFixed(4)}</Text>}
+             <TouchableOpacity onPress={getToken} style={styles.btn}>
+                <Text style={styles.btnText}>Fetch Token</Text>
+            </TouchableOpacity>
+           {pushToken && <Text>{pushToken.length > 30 ? pushToken.slice(0, 30) + "..." : pushToken}</Text>}
         </KeyboardAvoidingView>
     )
 }
