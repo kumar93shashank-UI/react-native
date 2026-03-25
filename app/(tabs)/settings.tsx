@@ -1,10 +1,15 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as ImagePicker from "expo-image-picker";
+import * as Location from "expo-location";
 import React, { useEffect } from "react";
-import { Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, Image, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 export default function SettingsScreen() {
     const [name, setName] = React.useState<string>("");
     const [savedName, setSavedName] = React.useState<string>("");
+    const [profileImage, setProfileImage] = React.useState<string|null>(null);
+    const [location, setLocation] = React.useState<{latitude: number, longitude: number}|null>(null);
+
     const OS = Platform.OS==="ios"?"iOS":"Android";
     useEffect(() => {
         const fetchUserName = async () => {
@@ -15,6 +20,33 @@ export default function SettingsScreen() {
         }
         fetchUserName();
     }, [])
+    async function pickImage() {
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== "granted") {
+            Alert.alert("Permission denied");
+            return;
+        }
+            const result = await ImagePicker.launchImageLibraryAsync({
+                allowsEditing: true,
+                aspect: [1, 1],
+                quality: 1,
+            });
+            if (!result.canceled) {
+                setProfileImage(result.assets[0].uri);
+            }
+    }
+    async function getLocation() {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+            Alert.alert("Permission denied");
+            return;
+        }
+        const location = await Location.getCurrentPositionAsync({});
+        setLocation({
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+        });
+    }
 
     return (
         <View style={styles.container}>
@@ -32,6 +64,14 @@ export default function SettingsScreen() {
                 <Text style={styles.btnText}>Submit</Text>
             </TouchableOpacity>
             {savedName && <Text>Welcome, {savedName}!</Text>}
+            <TouchableOpacity onPress={pickImage} style={styles.btn}>
+                <Text style={styles.btnText}>Pick Image</Text>
+            </TouchableOpacity>
+            {profileImage && <Image source={{ uri: profileImage }} style={styles.avatar} />}
+            <TouchableOpacity onPress={getLocation} style={styles.btn}>
+                <Text style={styles.btnText}>Fetch Location</Text>
+            </TouchableOpacity>
+            {location && <Text>Latitude: {location.latitude.toFixed(4)}, Longitude: {location.longitude.toFixed(4)}</Text>}
         </View>
     )
 }
@@ -76,5 +116,10 @@ const styles = StyleSheet.create({
         color: "#fff",
         fontSize: 12,
         fontWeight: "600",
+    },
+    avatar:{
+        width: 100,
+        height: 100,
+        borderRadius: 50,
     }
 })
