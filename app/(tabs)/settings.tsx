@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
 import React, { useEffect } from "react";
-import { Alert, Image, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, Image, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 export default function SettingsScreen() {
     const [name, setName] = React.useState<string>("");
@@ -49,7 +49,8 @@ export default function SettingsScreen() {
     }
 
     return (
-        <View style={styles.container}>
+        <KeyboardAvoidingView style={styles.container}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}>
             <View style={styles.badge}>
             <Text style={styles.badgeText}>{`Running on ${OS}`}</Text>
             </View>
@@ -72,7 +73,7 @@ export default function SettingsScreen() {
                 <Text style={styles.btnText}>Fetch Location</Text>
             </TouchableOpacity>
             {location && <Text>Latitude: {location.latitude.toFixed(4)}, Longitude: {location.longitude.toFixed(4)}</Text>}
-        </View>
+        </KeyboardAvoidingView>
     )
 }
 
