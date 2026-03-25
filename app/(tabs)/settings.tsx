@@ -1,10 +1,11 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect } from "react";
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 export default function SettingsScreen() {
     const [name, setName] = React.useState<string>("");
     const [savedName, setSavedName] = React.useState<string>("");
+    const OS = Platform.OS==="ios"?"iOS":"Android";
     useEffect(() => {
         const fetchUserName = async () => {
             const storedName: string | null = await AsyncStorage.getItem("userName");
@@ -14,8 +15,12 @@ export default function SettingsScreen() {
         }
         fetchUserName();
     }, [])
+
     return (
         <View style={styles.container}>
+            <View style={styles.badge}>
+            <Text style={styles.badgeText}>{`Running on ${OS}`}</Text>
+            </View>
             <Text style={styles.name}>Settings Screen</Text>
             <TextInput placeholder="Type something..." style={styles.btn1}
                 onChangeText={(text: string) => setName(text)}
@@ -56,5 +61,20 @@ const styles = StyleSheet.create({
     },
     btnText:{
         color: "#fff",
+    },
+    badge: {
+        ...Platform.select({
+            ios: { backgroundColor: "#007AFF" },
+            android: { backgroundColor: "#3DDC84" },
+        }),
+        paddingHorizontal: 12,
+        paddingVertical: 4,
+        borderRadius: 999,
+        marginBottom: 16,
+    },
+    badgeText: {
+        color: "#fff",
+        fontSize: 12,
+        fontWeight: "600",
     }
 })
